@@ -2,7 +2,10 @@ import asyncio
 
 def run_async(coro):
     try:
-        loop = asyncio.get_event_loop()
-        raise RuntimeError("Already running inside event loop, cannot run async here directly")
+        loop = asyncio.get_running_loop()
     except RuntimeError:
-       return asyncio.run(coro)
+        # No running loop — create one
+        return asyncio.run(coro)
+    else:
+        # Already in an async context — schedule it properly
+        return loop.create_task(coro)

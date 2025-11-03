@@ -17,11 +17,13 @@ class TransactionWebhook(BaseModel):
 
 @router.post("/webhooks/transactions", status_code=202)
 async def receive_webhook(payload: TransactionWebhook):
-    process_transaction_task.delay(payload.model_dump())
+    print("Transaction Payload inside receive_webhook", payload)
+    process_transaction_task.delay(payload.dict())
     return {"message": "Accepted for processing"}
 
 @router.get("/transactions/{transaction_id}")
 async def get_transaction(transaction_id: str, session: AsyncSession = Depends(get_session)):
+    print("Transaction Id in Post Route",transaction_id )
     stmt = select(Transaction).filter(Transaction.transaction_id == transaction_id)
     result = await session.execute(stmt)
     transaction = result.scalars().first()

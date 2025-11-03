@@ -2,9 +2,8 @@ from datetime import datetime
 from sqlalchemy.future import select
 from sqlalchemy.exc import IntegrityError
 from app.models.transaction import Transaction
-from app.core.database import AsyncSession, get_session
+from app.core.database import AsyncSessionLocal
 from app.core.celery_app import celery_app
-import asyncio
 import redis.asyncio as redis_client
 from app.core.config import settings
 from app.utils.helper import run_async
@@ -18,20 +17,22 @@ async def init_redis():
 
 @celery_app.task(bind=True, name="app.services.transaction_service.process_transaction_task")
 def process_transaction_task(self, transaction_data):
+    print(f"[Celery] Processing transaction {transaction_data.get('transaction_id')}")
     run_async(process_transaction(transaction_data))
 
 async def process_transaction(transaction_data: dict):
+    print(f"[Process] Start processing transaction_id: {transaction_data['transaction_id']}")
     await init_redis()
 
     transaction_id = transaction_data["transaction_id"]
     # Idempotency check
-    if await redis.get(transaction_id):
-        return
+    # if await redis.get(transaction_id):
+    #     return
 
     # Mark as processing with expiration
-    await redis.set(transaction_id, "processing", ex=3600)
+    # await redis.set(transaction_id, "processing", ex=3600)
 
-    async with get_session() as session:
+    async with AsyncSessionLocal() as session:
         # Check if transaction exists in DB
         stmt = select(Transaction).filter(Transaction.transaction_id == transaction_id)
         result = await session.execute(stmt)
