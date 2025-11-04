@@ -7,7 +7,7 @@ app = FastAPI(title="Transaction Webhook Service")
 origins = [
     "http://localhost:3000", 
     "http://localhost:5173", 
-    "https://your-production-frontend-domain.com",
+    "https://walnutpay.vercel.app/",
 ]
 
 app.add_middleware(
