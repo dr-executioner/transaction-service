@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from alembic import context
+from app.core.database import DATABASE_URL
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -30,7 +31,7 @@ target_metadata = Base.metadata
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
-database_url = "postgresql+asyncpg://walnut:transaction_1232@localhost:5433/transactionDb"
+database_url = DATABASE_URL
 if not database_url:
     raise RuntimeError("DATABASE_URL not found in environment.")
 
