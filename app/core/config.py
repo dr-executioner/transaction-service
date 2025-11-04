@@ -1,4 +1,5 @@
 from pydantic_settings import BaseSettings
+from pydantic import Field
 
 class Settings(BaseSettings):
     POSTGRES_USER: str
@@ -6,10 +7,8 @@ class Settings(BaseSettings):
     POSTGRES_DB: str
     POSTGRES_HOST: str
     POSTGRES_PORT: int
-
-    REDIS_URL: str
-
-    CELERY_BROKER_URL: str = REDIS_URL
+    REDIS_URL: str = "redis://localhost:6379/0"
+    CELERY_BROKER_URL: str = Field(default_factory=lambda: "redis://localhost:6379/0")
     CELERY_RESULT_BACKEND: str = REDIS_URL
 
     class Config:
