@@ -7,15 +7,15 @@ app = FastAPI(title="Transaction Webhook Service")
 origins = [
     "http://localhost:3000", 
     "http://localhost:5173", 
-    "https://walnutpay.vercel.app/",
+    "https://walnutpay.vercel.app",
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins, 
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
-    allow_methods=["*"], 
-    allow_headers=["*"], 
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(health.router)
